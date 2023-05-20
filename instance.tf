@@ -1,5 +1,5 @@
-resource "oci_core_instance" "mc_server" {
-  display_name = var.project_name
+resource "oci_core_instance" "self" {
+  display_name = local.instance_name
 
   shape = var.vm_shape
   shape_config {
@@ -24,8 +24,10 @@ resource "oci_core_instance" "mc_server" {
   create_vnic_details {
     assign_private_dns_record = "true"
     assign_public_ip          = "true"
-    subnet_id                 = oci_core_subnet.public.id
+    nsg_ids                   = [oci_core_network_security_group.self[0].id]
+    subnet_id                 = var.existing_pub_subnet == "" ? oci_core_subnet.public[0].id : var.existing_pub_subnet
   }
+
 
   agent_config {
     is_management_disabled = "false"
@@ -61,6 +63,7 @@ resource "oci_core_instance" "mc_server" {
   }
 
   metadata = {
-    "ssh_authorized_keys" = var.pub_key
+    ssh_authorized_keys = var.pub_key
+    # user_data           = base64encode(data.template_file.bootstrap.rendered)
   }
 }

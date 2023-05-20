@@ -25,6 +25,24 @@ variable "pub_subnet_block" {
   default     = "10.0.0.0/24"
 }
 
+variable "existing_pub_subnet" {
+  type        = string
+  description = "The ID of an existing public subnet. If left at \"\", will create a new VPN and associate this instance to it"
+  default     = ""
+}
+
+variable "admin_ip_addresses" {
+  type        = list(string)
+  description = "List of IPs to allow SSH access"
+  default     = []
+}
+
+variable "game_ip_addresses" {
+  type        = list(string)
+  description = "List of IPs to allow minecraft access"
+  default     = []
+}
+
 ## Instance Variables
 
 variable "vm_shape" {
