@@ -68,8 +68,9 @@ resource "oci_core_instance_configuration" "self" {
       }
 
       shape_config {
-        memory_in_gbs = var.vm_specs["memory"]
-        ocpus         = var.vm_specs["cpus"]
+        memory_in_gbs             = var.vm_specs["memory"]
+        ocpus                     = var.vm_specs["cpus"]
+        baseline_ocpu_utilization = "BASELINE_1_8"
       }
 
       source_details {
