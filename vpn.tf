@@ -19,6 +19,8 @@ resource "oci_core_subnet" "public" {
 
   cidr_block     = var.pub_subnet_block
   route_table_id = oci_core_vcn.self[count.index].default_route_table_id
+
+  security_list_ids = [oci_core_security_list.self[count.index].id]
 }
 
 resource "oci_core_internet_gateway" "self" {
@@ -42,66 +44,42 @@ resource "oci_core_default_route_table" "self" {
   manage_default_resource_id = oci_core_vcn.self[count.index].default_route_table_id
 }
 
-resource "oci_core_network_security_group" "self" {
+resource "oci_core_security_list" "self" {
   count = var.existing_pub_subnet == "" ? 1 : 0
 
+  display_name   = var.project_name
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.self[count.index].id
 
-  display_name = var.project_name
-}
+  egress_security_rules {
+    protocol         = "all"
+    destination      = "0.0.0.0/0"
+    destination_type = "CIDR_BLOCK"
+  }
 
-resource "oci_core_network_security_group_security_rule" "admin" {
-  count = var.existing_pub_subnet == "" ? length(var.admin_ip_addresses) : 0
-
-  network_security_group_id = oci_core_network_security_group.self[count.index].id
-  direction                 = "INGRESS"
-  protocol                  = "6"
-
-  source_type = "CIDR_BLOCK"
-  source      = var.admin_ip_addresses[count.index]
-
-  tcp_options {
-    destination_port_range {
-      max = 22
-      min = 22
-    }
-    source_port_range {
-      max = 22
-      min = 22
+  dynamic "ingress_security_rules" {
+    for_each = var.admin_ip_addresses
+    content {
+      protocol    = "6"
+      source_type = "CIDR_BLOCK"
+      source      = ingress_security_rules.value
+      tcp_options {
+        min = 22
+        max = 22
+      }
     }
   }
-}
 
-resource "oci_core_network_security_group_security_rule" "game" {
-  count = var.existing_pub_subnet == "" ? length(var.game_ip_addresses) : 0
-
-  network_security_group_id = oci_core_network_security_group.self[count.index].id
-  direction                 = "INGRESS"
-  protocol                  = "6"
-
-  source_type = "CIDR_BLOCK"
-  source      = var.game_ip_addresses[count.index]
-
-  tcp_options {
-    destination_port_range {
-      max = 25565
-      min = 25565
-    }
-    source_port_range {
-      max = 25565
-      min = 25565
+  dynamic "ingress_security_rules" {
+    for_each = var.game_ip_addresses
+    content {
+      protocol    = "6"
+      source_type = "CIDR_BLOCK"
+      source      = ingress_security_rules.value
+      tcp_options {
+        max = 25565
+        min = 25565
+      }
     }
   }
-}
-
-resource "oci_core_network_security_group_security_rule" "engress" {
-  count = var.existing_pub_subnet == "" ? 1 : 0
-
-  network_security_group_id = oci_core_network_security_group.self[count.index].id
-  direction                 = "EGRESS"
-  protocol                  = "all"
-
-  destination_type = "CIDR_BLOCK"
-  destination      = "0.0.0.0/0"
 }

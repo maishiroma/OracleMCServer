@@ -22,11 +22,15 @@ KillMode=process
 KillSignal=SIGINT
 SuccessExitStatus=130
 WorkingDirectory=${server_folder}
-ExecStart=/usr/bin/java -Xms1G -Xmx5G -XX:+UseG1GC -jar server.jar nogui
+ExecStart=/usr/bin/java -Xms1G -Xmx5G -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -jar server.jar nogui
 [Install]
 WantedBy=multi-user.target
 EOF
 systemctl daemon-reload
+
+firewall-cmd --permanent --zone=public --add-port=25565/tcp
+firewall-cmd --permanent --zone=public --add-port=25565/udp
+firewall-cmd --reload
 
 systemctl start minecraft
 while [ ! -f "${server_folder}/eula.txt" ]; do
