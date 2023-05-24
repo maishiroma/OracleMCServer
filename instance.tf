@@ -1,6 +1,6 @@
 resource "oci_core_instance_configuration" "self" {
   compartment_id = var.compartment_id
-  display_name   = local.instance_name
+  display_name   = local.unique_resource_name
 
   instance_details {
     instance_type = "compute"
@@ -87,9 +87,12 @@ resource "oci_core_instance_pool" "self" {
   size           = 1
 
   instance_configuration_id = oci_core_instance_configuration.self.id
-
   placement_configurations {
     availability_domain = var.availability_domain
     primary_subnet_id   = var.existing_pub_subnet == "" ? oci_core_subnet.public[0].id : var.existing_pub_subnet
+  }
+
+  freeform_tags = {
+    project = var.project_name
   }
 }

@@ -1,7 +1,5 @@
 locals {
   unique_resource_name = "${var.project_name}-${random_string.unique.result}"
-
-  instance_name = "${local.unique_resource_name}-ins"
 }
 
 data "oci_objectstorage_namespace" "self" {
