@@ -8,6 +8,7 @@ max_memory="5G"
 
 useradd -r -m -U -d ${home_folder} -s /bin/bash minecraft
 mkdir ${server_folder}
+chown -R minecraft:minecraft ${server_folder}
 cd ${server_folder}
 
 yum install -y jdk-18.x86_64 zip
