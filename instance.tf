@@ -79,6 +79,10 @@ resource "oci_core_instance_configuration" "self" {
       }
     }
   }
+
+  freeform_tags = {
+    project = var.project_name
+  }
 }
 
 resource "oci_core_instance_pool" "self" {
