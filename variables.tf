@@ -76,3 +76,23 @@ variable "pub_key" {
   type        = string
   description = "The public key to associate on the instance in order to provide SSH access"
 }
+
+## Minecraft Server Variables
+
+variable "min_memory" {
+  type        = string
+  description = "The min amount of RAM allocate to the server"
+  default     = "1G"
+}
+
+variable "max_memory" {
+  type        = string
+  description = "The max amount of RAM allocate to the server"
+  default     = "5G"
+}
+
+variable "minecraft_server_jar_download_url" {
+  type        = string
+  description = "The URL that allows one to download the server JAR of their choice"
+  default     = "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"
+}

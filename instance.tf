@@ -11,6 +11,7 @@ resource "oci_core_instance_configuration" "self" {
       is_pv_encryption_in_transit_enabled = true
       metadata = {
         "ssh_authorized_keys" = var.pub_key
+        "user_data"           = data.template_cloudinit_config.self.rendered
       }
       shape = var.vm_shape
 
@@ -82,6 +83,10 @@ resource "oci_core_instance_configuration" "self" {
 
   freeform_tags = {
     project = var.project_name
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
