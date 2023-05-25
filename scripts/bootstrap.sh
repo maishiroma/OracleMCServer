@@ -8,6 +8,8 @@ service_name="minecraft"
 jar_name="$(basename ${minecraft_server_jar_download_url})"
 
 if [ ! -d "${server_folder}" ]; then
+    echo "Performing initial bootstrap"
+
     useradd -r -m -U -d ${home_folder} -s /bin/bash minecraft
     mkdir ${server_folder}
     chown -R minecraft:minecraft ${server_folder}
@@ -20,11 +22,13 @@ if [ ! -d "${server_folder}" ]; then
     echo "Creating backup script"
     cat << EOF > /etc/backup.sh
 #!/bin/bash
+set -x
 
 backup_name="backup_\$(date "+%Y%m%d-%H%M%S").zip"
 
 echo "Backup is in progress, please wait..."
 systemctl stop ${service_name}
+sleep 10
 zip -qr ${server_folder}/\${backup_name} ${server_folder}/world
 oci os object put --namespace ${bucket_namespace} --bucket-name ${bucket_name} --file ${server_folder}/\${backup_name} --no-multipart --auth instance_principal
 rm -f ${server_folder}/\${backup_name}
@@ -36,10 +40,12 @@ EOF
     echo "Creating restore from backup script"
     cat << EOF > /etc/restore_backup.sh
 #!/bin/bash
+set -x
 # Pass parameter of backup name with path
 
 echo "Restoring from backup, please wait..."
 systemctl stop ${service_name}
+sleep 10
 oci os object get --namespace ${bucket_namespace} --bucket-name ${bucket_name} --name \$1 --file ${server_folder}/\$1 --auth instance_principal
 rm -rf ${server_folder}/world
 unzip -q ${server_folder}/\$1 -d ${server_folder}
@@ -75,7 +81,9 @@ EOF
     systemctl restart ${service_name}
 
     echo "Configuring Firewall"
-    firewall-offline-cmd --permanent --zone=public --add-port=25565/tcp
-    firewall-offline-cmd --permanent --zone=public --add-port=25565/udp
-    firewall-offline-cmd --reload
+    firewall-offline-cmd --zone=public --add-port=25565/tcp
+    firewall-offline-cmd --zone=public --add-port=25565/udp
+else
+    echo "Initial bootstrap already happened. Restarting Minecraft Server"
+    systemctl restart ${service_name}
 fi
