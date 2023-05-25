@@ -82,11 +82,9 @@ EOF
     echo "Configuring Firewall"
     firewall-offline-cmd --zone=public --add-port=25565/tcp
     firewall-offline-cmd --zone=public --add-port=25565/udp
-    systemctl enable firewalld
-    systemctl start firewalld
-    firewall-cmd --reload
+
+    echo "Need to run firewall-cmd --reload manually!" 
 else
     echo "Initial bootstrap already happened."
 fi
-
 systemctl restart ${service_name}
