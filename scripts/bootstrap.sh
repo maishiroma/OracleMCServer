@@ -22,8 +22,6 @@ if [ ! -d "${server_folder}" ]; then
     echo "Creating backup script"
     cat << EOF > /etc/backup.sh
 #!/bin/bash
-set -x
-
 backup_name="backup_\$(date "+%Y%m%d-%H%M%S").zip"
 
 echo "Backup is in progress, please wait..."
@@ -40,7 +38,6 @@ EOF
     echo "Creating restore from backup script"
     cat << EOF > /etc/restore_backup.sh
 #!/bin/bash
-set -x
 # Pass parameter of backup name with path
 
 echo "Restoring from backup, please wait..."
