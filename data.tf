@@ -32,7 +32,6 @@ data "template_cloudinit_config" "self" {
           permissions = "0644"
         },
         {
-          encoding    = "b64"
           content     = file("${path.module}/scripts/bootstrap.sh")
           path        = "/etc/bootstrap.sh"
           owner       = "root:root"

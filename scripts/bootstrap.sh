@@ -78,12 +78,15 @@ EOF
         sleep 5
     done
     sed -i 's/eula=false/eula=true/g' ${server_folder}/eula.txt
-    systemctl restart ${service_name}
 
     echo "Configuring Firewall"
     firewall-offline-cmd --zone=public --add-port=25565/tcp
     firewall-offline-cmd --zone=public --add-port=25565/udp
+    systemctl enable firewalld
+    systemctl start firewalld
+    firewall-cmd --reload
 else
-    echo "Initial bootstrap already happened. Restarting Minecraft Server"
-    systemctl restart ${service_name}
+    echo "Initial bootstrap already happened."
 fi
+
+systemctl restart ${service_name}
