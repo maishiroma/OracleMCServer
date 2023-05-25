@@ -1,5 +1,5 @@
 resource "oci_core_instance_configuration" "self" {
-  compartment_id = var.compartment_id
+  compartment_id = oci_identity_compartment.self.id
   display_name   = local.unique_resource_name
 
   instance_details {
@@ -7,7 +7,7 @@ resource "oci_core_instance_configuration" "self" {
 
     launch_details {
       availability_domain                 = var.availability_domain
-      compartment_id                      = var.compartment_id
+      compartment_id                      = oci_identity_compartment.self.id
       is_pv_encryption_in_transit_enabled = true
       metadata = {
         "ssh_authorized_keys" = var.pub_key
@@ -86,8 +86,8 @@ resource "oci_core_instance_configuration" "self" {
 }
 
 resource "oci_core_instance_pool" "self" {
-  compartment_id = var.compartment_id
-  display_name   = var.project_name
+  compartment_id = oci_identity_compartment.self.id
+  display_name   = local.unique_resource_name
   size           = 1
 
   instance_configuration_id = oci_core_instance_configuration.self.id

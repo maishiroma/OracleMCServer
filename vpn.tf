@@ -2,7 +2,7 @@ resource "oci_core_vcn" "self" {
   count = var.existing_pub_subnet == "" ? 1 : 0
 
   display_name   = local.unique_resource_name
-  compartment_id = var.compartment_id
+  compartment_id = oci_identity_compartment.self.id
   cidr_block     = var.vpc_cidr_block
   dns_label      = "vcn05182201"
 
@@ -15,7 +15,7 @@ resource "oci_core_subnet" "public" {
   count = var.existing_pub_subnet == "" ? 1 : 0
 
   display_name   = "${local.unique_resource_name}-public"
-  compartment_id = var.compartment_id
+  compartment_id = oci_identity_compartment.self.id
   cidr_block     = var.pub_subnet_block
   dns_label      = "subnet05182201"
 
@@ -32,7 +32,7 @@ resource "oci_core_internet_gateway" "self" {
   count = var.existing_pub_subnet == "" ? 1 : 0
 
   display_name   = local.unique_resource_name
-  compartment_id = var.compartment_id
+  compartment_id = oci_identity_compartment.self.id
 
   vcn_id  = oci_core_vcn.self[count.index].id
   enabled = "true"
@@ -45,7 +45,8 @@ resource "oci_core_internet_gateway" "self" {
 resource "oci_core_default_route_table" "self" {
   count = var.existing_pub_subnet == "" ? 1 : 0
 
-  display_name = local.unique_resource_name
+  display_name   = local.unique_resource_name
+  compartment_id = oci_identity_compartment.self.id
 
   manage_default_resource_id = oci_core_vcn.self[count.index].default_route_table_id
   route_rules {
@@ -63,7 +64,7 @@ resource "oci_core_security_list" "self" {
   count = var.existing_pub_subnet == "" ? 1 : 0
 
   display_name   = local.unique_resource_name
-  compartment_id = var.compartment_id
+  compartment_id = oci_identity_compartment.self.id
   vcn_id         = oci_core_vcn.self[count.index].id
 
   egress_security_rules {

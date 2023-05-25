@@ -3,7 +3,7 @@ locals {
 }
 
 data "oci_objectstorage_namespace" "self" {
-  compartment_id = var.compartment_id
+  compartment_id = oci_identity_compartment.self.id
 }
 
 resource "random_string" "unique" {

@@ -5,6 +5,8 @@ server_folder="${home_folder}/server"
 service_name="minecraft"
 min_memory="1G"
 max_memory="5G"
+bucket_namespace="axngd0vpjssw"
+bucket_name="mc-server-1n9kf-backups"
 
 useradd -r -m -U -d ${home_folder} -s /bin/bash minecraft
 mkdir ${server_folder}
@@ -20,10 +22,11 @@ cat << EOF > /etc/backup.sh
 
 systemctl stop ${service_name}
 zip -qr ${server_folder}/backup.zip ${server_folder}/world
-oci os object put --namespace $BUCKET_NAMESPACE --bucket-name $BUCKET_NAME --file  --no-multipart --auth instance_principal
+oci os object put --namespace ${bucket_namespace} --bucket-name ${bucket_name} --file ${server_folder}/backup.zip --no-multipart --auth instance_principal
 rm -f ${server_folder}/backup.zip
 echo "Backup done and saved to bucket"
 EOF
+chmod +x /etc/backup.sh
 
 curl -s -O "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"
 

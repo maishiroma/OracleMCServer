@@ -1,8 +1,8 @@
 ## General Variables
 
-variable "compartment_id" {
+variable "parent_compartment_id" {
   type        = string
-  description = "The compartment group to place these resources in."
+  description = "The parent compartment to associate the deployment's compartment."
 }
 
 variable "project_name" {
