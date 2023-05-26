@@ -102,3 +102,9 @@ variable "minecraft_server_jar_download_url" {
   description = "The URL that allows one to download the server JAR of their choice"
   default     = "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"
 }
+
+variable "server_type" {
+  type        = string
+  description = "What kind of server is this? Defaults to vanilla."
+  default     = "vanilla"
+}

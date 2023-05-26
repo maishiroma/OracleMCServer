@@ -53,9 +53,10 @@ systemctl restart ${service_name}
 echo "Restored from backup, \$1. Server will restart momentarily."
 EOF
     chmod +x /etc/restore_backup.sh
-
-    echo "Creating mod sync script"
-    cat << EOF > /etc/mod_refresh.sh
+    
+    if [ "${server_type}" != "vanilla" ]; 
+        echo "Creating mod sync script"
+        cat << EOF > /etc/mod_refresh.sh
 #!/bin/bash
 
 echo "Syncing mods from bucket..."
@@ -65,11 +66,11 @@ rclone sync oos:${bucket_name}/mods ${mod_folder} --create-empty-src-dirs
 systemctl start ${service_name}
 echo "Syncing complete! Server will be restarted momentarily."
 EOF
-    chmod +x /etc/mod_refresh.sh
+        chmod +x /etc/mod_refresh.sh
 
-    echo "Creating rclone config"
-    mkdir -p ~/.config/rclone
-    cat << EOF > ~/.config/rclone/rclone.conf
+        echo "Creating rclone config"
+        mkdir -p ~/.config/rclone
+        cat << EOF > ~/.config/rclone/rclone.conf
 [oos]
 type = oracleobjectstorage
 namespace = ${bucket_namespace}
@@ -79,9 +80,10 @@ region = ${region_name}
 endpoint = https://${bucket_namespace}.compat.objectstorage.${region_name}.oraclecloud.com
 provider = instance_principal_auth
 EOF
+    fi
 
-    echo "Downloaing minecraft server"
     curl -s -O "${minecraft_server_jar_download_url}"
+    echo "Creating systemd service for minecraft"
     cat << EOF > /etc/systemd/system/minecraft.service
 [Unit]
 Description=Minecraft Server
