@@ -54,7 +54,7 @@ echo "Restored from backup, \$1. Server will restart momentarily."
 EOF
     chmod +x /etc/restore_backup.sh
     
-    if [ "${server_type}" != "vanilla" ]; 
+    if [ "${server_type}" != "vanilla" ]; then
         echo "Creating mod sync script"
         cat << EOF > /etc/mod_refresh.sh
 #!/bin/bash
