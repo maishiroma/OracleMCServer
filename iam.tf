@@ -28,6 +28,7 @@ resource "oci_identity_policy" "self" {
   description = "Policy to allow access to buckets"
   statements = [
     "Allow dynamic-group ${oci_identity_dynamic_group.self.name} to manage objects in compartment ${oci_identity_compartment.self.name}",
+    "Allow dynamic-group ${oci_identity_dynamic_group.self.name} to manage buckets in compartment ${oci_identity_compartment.self.name}"
   ]
 
   freeform_tags = {

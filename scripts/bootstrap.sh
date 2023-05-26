@@ -4,6 +4,7 @@ source /etc/oci_facts
 
 home_folder="/home/minecraft"
 server_folder="${home_folder}/server"
+mod_folder="${server_folder}/mods"
 service_name="minecraft"
 jar_name="$(basename ${minecraft_server_jar_download_url})"
 
@@ -18,6 +19,8 @@ if [ ! -d "${server_folder}" ]; then
     yum install -y jdk-18.x86_64 zip unzip
     dnf -y install oraclelinux-developer-release-el8
     dnf -y install python36-oci-cli
+
+    curl https://rclone.org/install.sh | bash
 
     echo "Creating backup script"
     cat << EOF > /etc/backup.sh
@@ -50,6 +53,32 @@ systemctl restart ${service_name}
 echo "Restored from backup, \$1. Server will restart momentarily."
 EOF
     chmod +x /etc/restore_backup.sh
+
+    echo "Creating mod sync script"
+    cat << EOF > /etc/mod_refresh.sh
+#!/bin/bash
+
+echo "Syncing mods from bucket..."
+systemctl stop ${service_name}
+sleep 10
+rclone sync oos:${bucket_name}/mods ${mod_folder} --create-empty-src-dirs
+systemctl start ${service_name}
+echo "Syncing complete! Server will be restarted momentarily."
+EOF
+    chmod +x /etc/mod_refresh.sh
+
+    echo "Creating rclone config"
+    mkdir -p ~/.config/rclone
+    cat << EOF > ~/.config/rclone/rclone.conf
+[oos]
+type = oracleobjectstorage
+namespace = ${bucket_namespace}
+env_auth = false
+compartment = ${compartment_id}
+region = ${region_name}
+endpoint = https://${bucket_namespace}.compat.objectstorage.${region_name}.oraclecloud.com
+provider = instance_principal_auth
+EOF
 
     echo "Downloaing minecraft server"
     curl -s -O "${minecraft_server_jar_download_url}"

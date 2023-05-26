@@ -14,6 +14,8 @@ data "template_file" "fact_file" {
     BUCKET_NAMESPACE        = data.oci_objectstorage_namespace.self.namespace
     BUCKET_NAME             = oci_objectstorage_bucket.self.name
     SERVER_JAR_DOWNLOAD_URL = var.minecraft_server_jar_download_url
+    REGION_NAME             = var.region_name
+    COMPARTMENT_ID          = oci_identity_compartment.self.id
   }
 }
 

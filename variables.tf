@@ -11,6 +11,12 @@ variable "project_name" {
   default     = "mc-server"
 }
 
+variable "region_name" {
+  type        = string
+  description = "The name of the region"
+  default     = "us-sanjose-1"
+}
+
 ## VPC Variables
 
 variable "vpc_cidr_block" {
