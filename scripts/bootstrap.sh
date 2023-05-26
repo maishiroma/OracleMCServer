@@ -91,11 +91,11 @@ After=local-fs.target network.target
 [Service]
 User=minecraft
 Nice=5
-KillMode=process
 KillSignal=SIGINT
 SuccessExitStatus=130
 WorkingDirectory=${server_folder}
 ExecStart=/usr/bin/java -Xms${min_memory} -Xmx${max_memory} -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -jar ${jar_name} nogui
+ExecStop=/bin/bash -c "while ps -p \$MAINPID > /dev/null; do /bin/sleep 1; done"
 [Install]
 WantedBy=multi-user.target
 EOF
