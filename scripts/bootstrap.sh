@@ -16,7 +16,7 @@ if [ ! -d "${server_folder}" ]; then
     chown -R minecraft:minecraft ${server_folder}
     cd ${server_folder}
 
-    yum install -y jdk-18.x86_64 zip unzip
+    yum install -y java-17-openjdk zip unzip
     dnf -y install oraclelinux-developer-release-el8
     dnf -y install python36-oci-cli
 

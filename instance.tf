@@ -68,10 +68,23 @@ resource "oci_core_instance_configuration" "self" {
         are_legacy_imds_endpoints_disabled = false
       }
 
-      shape_config {
-        memory_in_gbs             = var.vm_specs["memory"]
-        ocpus                     = var.vm_specs["cpus"]
-        baseline_ocpu_utilization = "BASELINE_1_8"
+      # Only use this if we are using the Free Tier Image Size
+      dynamic "shape_config" {
+        for_each = var.vm_shape == "VM.Standard.A1.Flex" ? ["1"] : []
+        content {
+          memory_in_gbs = var.vm_specs["memory"]
+          ocpus         = var.vm_specs["cpus"]
+        }
+      }
+
+      # Only use this if we are NOT using the Free Tier Image
+      dynamic "shape_config" {
+        for_each = var.vm_shape != "VM.Standard.A1.Flex" ? ["1"] : []
+        content {
+          memory_in_gbs             = var.vm_specs["memory"]
+          ocpus                     = var.vm_specs["cpus"]
+          baseline_ocpu_utilization = "BASELINE_1_8"
+        }
       }
 
       source_details {
