@@ -30,11 +30,11 @@ backup_name="backup_\$(date "+%Y%m%d-%H%M%S").zip"
 echo "Backup is in progress, please wait..."
 systemctl stop ${service_name}
 sleep 10
-zip -qr ${server_folder}/\${backup_name} ${server_folder}/world
+(cd ${server_folder} && zip -qr ${server_folder}/\${backup_name} ./world)
 oci os object put --namespace ${bucket_namespace} --bucket-name ${bucket_name} --file ${server_folder}/\${backup_name} --no-multipart --auth instance_principal
 rm -f ${server_folder}/\${backup_name}
 systemctl start ${service_name}
-echo "Backup done and saved to bucket, ${bucket_name}. Server will restart momentarily."
+echo "Backup, ${backup_name}, saved to bucket, ${bucket_name}. Server will restart momentarily."
 EOF
     chmod +x /etc/backup.sh
 
@@ -49,6 +49,8 @@ sleep 10
 oci os object get --namespace ${bucket_namespace} --bucket-name ${bucket_name} --name \$1 --file ${server_folder}/\$1 --auth instance_principal
 rm -rf ${server_folder}/world
 unzip -q ${server_folder}/\$1 -d ${server_folder}
+chown -R minecraft:minecraft ${server_folder}/world
+rm -rf ${server_folder}/\$1
 systemctl restart ${service_name}
 echo "Restored from backup, \$1. Server will restart momentarily."
 EOF
