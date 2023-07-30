@@ -99,7 +99,7 @@ No modules.
 
 ### Outputs
 
-No outputs.
+| <a name="pub_subnet_id"></a> [pub\_subnet\_id](#output\pub\_subnet\_id) | The OICD of the created public subnet, if it exists. | |
 
 ## Steps to Deploy
 
