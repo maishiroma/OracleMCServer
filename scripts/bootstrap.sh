@@ -56,7 +56,11 @@ echo "Restored from backup, \$1. Server will restart momentarily."
 EOF
     chmod +x /etc/restore_backup.sh
     
-    if [ "${server_type}" != "vanilla" ]; then
+    echo "Download Server Jar"
+    curl -s -O "${minecraft_server_jar_download_url}"
+    run_command="/usr/bin/java -Xms${min_memory} -Xmx${max_memory} -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -jar ${jar_name} nogui"
+    
+    if [ ${is_modded} ]; then
         echo "Creating mod sync script"
         cat << EOF > /etc/mod_refresh.sh
 #!/bin/bash
@@ -82,9 +86,12 @@ region = ${region_name}
 endpoint = https://${bucket_namespace}.compat.objectstorage.${region_name}.oraclecloud.com
 provider = instance_principal_auth
 EOF
+        
+        echo "Installing Modded Server"
+        /usr/bin/java -jar ${jar_name} --installServer
+        run_command="/bin/sh run.sh"
     fi
 
-    curl -s -O "${minecraft_server_jar_download_url}"
     echo "Creating systemd service for minecraft"
     cat << EOF > /etc/systemd/system/minecraft.service
 [Unit]
@@ -97,10 +104,11 @@ TimeoutStopSec=120
 KillSignal=SIGINT
 SuccessExitStatus=0 1 130
 WorkingDirectory=${server_folder}
-ExecStart=/usr/bin/java -Xms${min_memory} -Xmx${max_memory} -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -jar ${jar_name} nogui
+ExecStart=${run_command}
 [Install]
 WantedBy=multi-user.target
 EOF
+    
     systemctl daemon-reload
     systemctl start ${service_name}
     echo "Waiting for eula to show up in server directory"
@@ -108,6 +116,20 @@ EOF
         sleep 5
     done
     sed -i 's/eula=false/eula=true/g' ${server_folder}/eula.txt
+
+    if [ ${is_modded} ]; then
+        echo "Creating JVM arguments for modded server"
+        cat << EOF > "${server_folder}/user_jvm_args.txt"
+-Xms${min_memory} 
+-Xmx${max_memory} 
+-XX:+UseG1GC 
+-XX:+UnlockExperimentalVMOptions 
+-XX:+DisableExplicitGC 
+-XX:+ParallelRefProcEnabled
+EOF
+        echo "Initial sync of mods"
+        rclone sync oos:${bucket_name}/mods ${mod_folder} --create-empty-src-dirs
+    fi
 
     echo "Configuring Firewall"
     firewall-offline-cmd --zone=public --add-port=25565/tcp

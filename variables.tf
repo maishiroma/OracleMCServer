@@ -99,12 +99,12 @@ variable "max_memory" {
 
 variable "minecraft_server_jar_download_url" {
   type        = string
-  description = "The URL that allows one to download the server JAR of their choice"
+  description = "The URL that allows one to download the server JAR of their choice. Defaults to a vanilla MC server."
   default     = "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"
 }
 
-variable "server_type" {
-  type        = string
-  description = "What kind of server is this? Defaults to vanilla."
-  default     = "vanilla"
+variable "is_modded" {
+  type        = bool
+  description = "Is this server a modded one? Defaults to False."
+  default     = false
 }

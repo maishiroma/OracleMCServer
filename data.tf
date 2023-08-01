@@ -16,7 +16,7 @@ data "template_file" "fact_file" {
     SERVER_JAR_DOWNLOAD_URL = var.minecraft_server_jar_download_url
     REGION_NAME             = var.region_name
     COMPARTMENT_ID          = oci_identity_compartment.self.id
-    SERVER_TYPE             = var.server_type
+    IS_MODDED               = var.is_modded
   }
 }
 
