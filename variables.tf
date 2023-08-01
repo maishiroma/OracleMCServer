@@ -108,3 +108,15 @@ variable "is_modded" {
   description = "Is this server a modded one? Defaults to False."
   default     = false
 }
+
+variable "custom_server_properties_path" {
+  type        = string
+  description = "The path to a custom server.properites that is used for this server. Leave blank to use the default"
+  default     = ""
+}
+
+variable "custom_ops_json_path" {
+  type        = string
+  description = "The path to a custom ops.json that is used for the server. Leave blank to not use assign anyone ops"
+  default     = ""
+}
