@@ -99,12 +99,24 @@ variable "max_memory" {
 
 variable "minecraft_server_jar_download_url" {
   type        = string
-  description = "The URL that allows one to download the server JAR of their choice"
+  description = "The URL that allows one to download the server JAR of their choice. Defaults to a vanilla MC server."
   default     = "https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"
 }
 
-variable "server_type" {
+variable "is_modded" {
+  type        = bool
+  description = "Is this server a modded one? Defaults to False."
+  default     = false
+}
+
+variable "custom_server_properties_path" {
   type        = string
-  description = "What kind of server is this? Defaults to vanilla."
-  default     = "vanilla"
+  description = "The path to a custom server.properites that is used for this server. Leave blank to use the default"
+  default     = ""
+}
+
+variable "custom_ops_json_path" {
+  type        = string
+  description = "The path to a custom ops.json that is used for the server. Leave blank to not use assign anyone ops"
+  default     = ""
 }

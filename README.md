@@ -12,11 +12,11 @@ Since I created a more complex deployment over [here](https://github.com/maishir
 
 - Managing `minecraft` service on instance via `systemd`
 - Backup and Restore from Backups done via Scripts (currently need to call manually on instance)
+- Can auto setup either **vanilla** or a **Forge** server
 - Automatic bootstrap and startup of Minecraft Server
 - Cost Saving Module; Bare Minimum Setup to get going
-- Ability to sync mods from Object Storage \*
-
-> \* While this server does allow for a modded server setup, as of now, the installation of a modded server is currently up to the ops deployer. Once the instance is up, the ops deployer is in charge of determining what mod loader to use, properly load it onto the instance and configure it with `systemd`
+- Ability to sync mods from Object Storage
+- Ability to initially pass a custom server.properties and an ops.json to the instance
 
 ## Architecture Diagram
 
@@ -34,7 +34,7 @@ This deployment creates the following items:
         - Port 22 Traffic
         - Port 25565 Traffic
 
-### Requirements
+## Requirements
 
 | Name | Version |
 |------|---------|
@@ -43,7 +43,7 @@ This deployment creates the following items:
 | <a name="requirement_random"></a> [random](#requirement\_random) | = 3.5.1 |
 | <a name="requirement_template"></a> [template](#requirement\_template) | = 2.2.0 |
 
-### Providers
+## Providers
 
 | Name | Version |
 |------|---------|
@@ -51,11 +51,11 @@ This deployment creates the following items:
 | <a name="provider_random"></a> [random](#provider\_random) | = 3.5.1 |
 | <a name="provider_template"></a> [template](#provider\_template) | = 2.2.0 |
 
-### Modules
+## Modules
 
 No modules.
 
-### Resources
+## Resources
 
 | Name | Type |
 |------|------|
@@ -74,32 +74,39 @@ No modules.
 | [oci_objectstorage_namespace.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/data-sources/objectstorage_namespace) | data source |
 | [template_cloudinit_config.self](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/cloudinit_config) | data source |
 | [template_file.fact_file](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
+| [template_file.ops_file](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
+| [template_file.server_properties_file](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
 
-### Inputs
+## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_ip_addresses"></a> [admin\_ip\_addresses](#input\_admin\_ip\_addresses) | List of IPs to allow SSH access | `list(string)` | `[]` | no |
 | <a name="input_availability_domain"></a> [availability\_domain](#input\_availability\_domain) | The az to put the instance in. Note that this default is for us-sanjose-1 | `string` | `"gEpX:US-SANJOSE-1-AD-1"` | no |
+| <a name="input_custom_ops_json_path"></a> [custom\_ops\_json\_path](#input\_custom\_ops\_json\_path) | The path to a custom ops.json that is used for the server. Leave blank to not use assign anyone ops | `string` | `""` | no |
+| <a name="input_custom_server_properties_path"></a> [custom\_server\_properties\_path](#input\_custom\_server\_properties\_path) | The path to a custom server.properites that is used for this server. Leave blank to use the default | `string` | `""` | no |
 | <a name="input_existing_pub_subnet"></a> [existing\_pub\_subnet](#input\_existing\_pub\_subnet) | The ID of an existing public subnet. If left at "", will create a new VPN and associate this instance to it | `string` | `""` | no |
 | <a name="input_game_ip_addresses"></a> [game\_ip\_addresses](#input\_game\_ip\_addresses) | List of IPs to allow minecraft access | `list(string)` | `[]` | no |
+| <a name="input_is_modded"></a> [is\_modded](#input\_is\_modded) | Is this server a modded one? Defaults to False. | `bool` | `false` | no |
 | <a name="input_max_memory"></a> [max\_memory](#input\_max\_memory) | The max amount of RAM allocate to the server | `string` | `"5G"` | no |
 | <a name="input_min_memory"></a> [min\_memory](#input\_min\_memory) | The min amount of RAM allocate to the server | `string` | `"1G"` | no |
-| <a name="input_minecraft_server_jar_download_url"></a> [minecraft\_server\_jar\_download\_url](#input\_minecraft\_server\_jar\_download\_url) | The URL that allows one to download the server JAR of their choice | `string` | `"https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"` | no |
+| <a name="input_minecraft_server_jar_download_url"></a> [minecraft\_server\_jar\_download\_url](#input\_minecraft\_server\_jar\_download\_url) | The URL that allows one to download the server JAR of their choice. Defaults to a vanilla MC server. | `string` | `"https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"` | no |
 | <a name="input_parent_compartment_id"></a> [parent\_compartment\_id](#input\_parent\_compartment\_id) | The parent compartment to associate the deployment's compartment. | `string` | n/a | yes |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | The name of this project | `string` | `"mc-server"` | no |
+
 | <a name="input_pub_key"></a> [pub\_key](#input\_pub\_key) | The public key to associate on the instance in order to provide SSH access | `string` | n/a | yes |
 | <a name="input_pub_subnet_block"></a> [pub\_subnet\_block](#input\_pub\_subnet\_block) | The CIDR block to use for the subnet | `string` | `"10.0.0.0/24"` | no |
 | <a name="input_region_name"></a> [region\_name](#input\_region\_name) | The name of the region | `string` | `"us-sanjose-1"` | no |
-| <a name="input_server_type"></a> [server\_type](#input\_server\_type) | What kind of server is this? Defaults to vanilla. | `string` | `"vanilla"` | no |
 | <a name="input_vm_image"></a> [vm\_image](#input\_vm\_image) | The image ID that is used for the VM. Note that this default is for us-sanjose-1. | `string` | `"ocid1.image.oc1.us-sanjose-1.aaaaaaaaxnfbpr6wcawvbgx56ls5v2lndcmp7q3e7guu3rkrwcfhecouxslq"` | no |
 | <a name="input_vm_shape"></a> [vm\_shape](#input\_vm\_shape) | The shape of the VM. The default is part of the Always Free Tier | `string` | `"VM.Standard.A1.Flex"` | no |
 | <a name="input_vm_specs"></a> [vm\_specs](#input\_vm\_specs) | The specs of the VM. Note that the default is part of the Always Free Tier | `map(string)` | <pre>{<br>  "cpus": "2",<br>  "memory": "6"<br>}</pre> | no |
 | <a name="input_vpc_cidr_block"></a> [vpc\_cidr\_block](#input\_vpc\_cidr\_block) | The CIDR block to use for the VPC | `string` | `"10.0.0.0/16"` | no |
 
-### Outputs
+## Outputs
 
-| <a name="pub_subnet_id"></a> [pub\_subnet\_id](#output\pub\_subnet\_id) | The OICD of the created public subnet, if it exists. | |
+| Name | Description |
+|------|-------------|
+| <a name="output_pub_subnet_id"></a> [pub\_subnet\_id](#output\_pub\_subnet\_id) | The OICD of the created public subnet, if it exists. |
 
 ## Steps to Deploy
 
@@ -155,6 +162,9 @@ All of these need to be done via `ssh` into the instance
 - Restoring from a named backup: `cd /etc && sudo ./restore_backup.sh <name_of_backup>`
 - Syncing Mods from bucket: `cd /etc && sudo ./mod_refresh.sh`
     - This is available if `server_type` is set to something besides `vanilla`
+- Adjusting the server.properites and/or ops.json
+    - Make changes in TF and apply them to the instance
+    - Reboot instance
 
 All of the following are services that are done via the OCI Console:
 - Shutting Down Instance: `OCI Console -> Instances -> Instance Pools -> Select Instance Pool, mc-server-XXXX -> Stop`

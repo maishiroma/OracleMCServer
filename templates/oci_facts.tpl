@@ -7,4 +7,4 @@ export bucket_name="${BUCKET_NAME}"
 export min_memory="${MIN_MEMORY}"
 export max_memory="${MAX_MEMORY}"
 export minecraft_server_jar_download_url="${SERVER_JAR_DOWNLOAD_URL}"
-export server_type="${SERVER_TYPE}"
+export is_modded=${IS_MODDED}
