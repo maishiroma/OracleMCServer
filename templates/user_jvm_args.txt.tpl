@@ -1,0 +1,6 @@
+-Xms${min_memory} 
+-Xmx${max_memory} 
+-XX:+UseG1GC 
+-XX:+UnlockExperimentalVMOptions 
+-XX:+DisableExplicitGC 
+-XX:+ParallelRefProcEnabled
