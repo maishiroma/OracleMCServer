@@ -149,3 +149,12 @@ resource "random_string" "unique" {
   special = false
   upper   = false
 }
+
+data "oci_core_instance_pool_instances" "self" {
+  compartment_id   = oci_identity_compartment.self.id
+  instance_pool_id = oci_core_instance_pool.self.id
+}
+
+data "oci_core_instance" "self" {
+  instance_id = data.oci_core_instance_pool_instances.self.instances[0].id
+}

@@ -71,11 +71,14 @@ No modules.
 | [oci_identity_policy.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/identity_policy) | resource |
 | [oci_objectstorage_bucket.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/objectstorage_bucket) | resource |
 | [random_string.unique](https://registry.terraform.io/providers/hashicorp/random/3.5.1/docs/resources/string) | resource |
+| [oci_core_instance.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/data-sources/core_instance) | data source |
+| [oci_core_instance_pool_instances.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/data-sources/core_instance_pool_instances) | data source |
 | [oci_objectstorage_namespace.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/data-sources/objectstorage_namespace) | data source |
 | [template_cloudinit_config.self](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/cloudinit_config) | data source |
 | [template_file.fact_file](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
-| [template_file.ops_file](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
-| [template_file.server_properties_file](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
+| [template_file.minecraft_service](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
+| [template_file.modded_user_jvm_args](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
+| [template_file.rclone_conf](https://registry.terraform.io/providers/hashicorp/template/2.2.0/docs/data-sources/file) | data source |
 
 ## Inputs
 
@@ -93,7 +96,6 @@ No modules.
 | <a name="input_minecraft_server_jar_download_url"></a> [minecraft\_server\_jar\_download\_url](#input\_minecraft\_server\_jar\_download\_url) | The URL that allows one to download the server JAR of their choice. Defaults to a vanilla MC server. | `string` | `"https://piston-data.mojang.com/v1/objects/8f3112a1049751cc472ec13e397eade5336ca7ae/server.jar"` | no |
 | <a name="input_parent_compartment_id"></a> [parent\_compartment\_id](#input\_parent\_compartment\_id) | The parent compartment to associate the deployment's compartment. | `string` | n/a | yes |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | The name of this project | `string` | `"mc-server"` | no |
-
 | <a name="input_pub_key"></a> [pub\_key](#input\_pub\_key) | The public key to associate on the instance in order to provide SSH access | `string` | n/a | yes |
 | <a name="input_pub_subnet_block"></a> [pub\_subnet\_block](#input\_pub\_subnet\_block) | The CIDR block to use for the subnet | `string` | `"10.0.0.0/24"` | no |
 | <a name="input_region_name"></a> [region\_name](#input\_region\_name) | The name of the region | `string` | `"us-sanjose-1"` | no |
@@ -106,7 +108,9 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_backup_bucket_name"></a> [backup\_bucket\_name](#output\_backup\_bucket\_name) | The name of the bucket that holds world backups and mods for the server |
 | <a name="output_pub_subnet_id"></a> [pub\_subnet\_id](#output\_pub\_subnet\_id) | The OICD of the created public subnet, if it exists. |
+| <a name="output_server_public_ip"></a> [server\_public\_ip](#output\_server\_public\_ip) | The public IP of the created server in the instance pool. |
 
 ## Steps to Deploy
 
