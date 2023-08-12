@@ -48,7 +48,10 @@ if [ ! -d "${server_folder}" ]; then
     echo "## Configuring Firewall ##"
     firewall-offline-cmd --zone=public --add-port=25565/tcp
     firewall-offline-cmd --zone=public --add-port=25565/udp
-    echo "NOTE: Need to run firewall-cmd --reload manually!" 
+    echo "NOTE: Need to run firewall-cmd --reload manually!"
+
+    echo "## Configure Auto Backup CronJob ##"
+    echo "${AUTO_BACKUP_CRONTIME}" | crontab -
 else
     echo "## Initial bootstrap already happened! ##"
 fi

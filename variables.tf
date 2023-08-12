@@ -120,3 +120,9 @@ variable "custom_ops_json_path" {
   description = "The path to a custom ops.json that is used for the server. Leave blank to not use assign anyone ops"
   default     = ""
 }
+
+variable "backup_crontime" {
+  type        = string
+  description = "The time in crontime for auto backups to run via a cronjob. Defaults to once a week on Friday at 3PM"
+  default     = "0 15 * * 5"
+}
