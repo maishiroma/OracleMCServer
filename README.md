@@ -69,8 +69,10 @@ No modules.
 | [oci_core_vcn.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/core_vcn) | resource |
 | [oci_identity_compartment.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/identity_compartment) | resource |
 | [oci_identity_dynamic_group.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/identity_dynamic_group) | resource |
+| [oci_identity_policy.bucket_service](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/identity_policy) | resource |
 | [oci_identity_policy.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/identity_policy) | resource |
 | [oci_objectstorage_bucket.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/objectstorage_bucket) | resource |
+| [oci_objectstorage_object_lifecycle_policy.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/resources/objectstorage_object_lifecycle_policy) | resource |
 | [random_string.unique](https://registry.terraform.io/providers/hashicorp/random/3.5.1/docs/resources/string) | resource |
 | [oci_core_instance.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/data-sources/core_instance) | data source |
 | [oci_core_instance_pool_instances.self](https://registry.terraform.io/providers/oracle/oci/4.121.0/docs/data-sources/core_instance_pool_instances) | data source |
