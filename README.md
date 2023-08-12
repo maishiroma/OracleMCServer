@@ -17,6 +17,7 @@ Since I created a more complex deployment over [here](https://github.com/maishir
 - Cost Saving Module; Bare Minimum Setup to get going
 - Ability to sync mods from Object Storage
 - Ability to initially pass a custom server.properties and an ops.json to the instance
+- Auto Backup via CronJob (Defaults to once a week on Friday at 3PM)
 
 ## Architecture Diagram
 
@@ -86,6 +87,7 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_admin_ip_addresses"></a> [admin\_ip\_addresses](#input\_admin\_ip\_addresses) | List of IPs to allow SSH access | `list(string)` | `[]` | no |
 | <a name="input_availability_domain"></a> [availability\_domain](#input\_availability\_domain) | The az to put the instance in. Note that this default is for us-sanjose-1 | `string` | `"gEpX:US-SANJOSE-1-AD-1"` | no |
+| <a name="input_backup_crontime"></a> [backup\_crontime](#input\_backup\_crontime) | The time in crontime for auto backups to run via a cronjob. Defaults to once a week on Friday at 3PM | `string` | `"0 15 * * 5"` | no |
 | <a name="input_custom_ops_json_path"></a> [custom\_ops\_json\_path](#input\_custom\_ops\_json\_path) | The path to a custom ops.json that is used for the server. Leave blank to not use assign anyone ops | `string` | `""` | no |
 | <a name="input_custom_server_properties_path"></a> [custom\_server\_properties\_path](#input\_custom\_server\_properties\_path) | The path to a custom server.properites that is used for this server. Leave blank to use the default | `string` | `""` | no |
 | <a name="input_existing_pub_subnet"></a> [existing\_pub\_subnet](#input\_existing\_pub\_subnet) | The ID of an existing public subnet. If left at "", will create a new VPN and associate this instance to it | `string` | `""` | no |
