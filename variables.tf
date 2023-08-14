@@ -49,6 +49,18 @@ variable "game_ip_addresses" {
   default     = []
 }
 
+variable "additional_tcp_ports" {
+  type        = list(number)
+  description = "A list of additional TCP ports to open up on the instance for access via the game_ip_addresses"
+  default     = []
+}
+
+variable "additonal_udp_ports" {
+  type        = list(number)
+  description = "A list of additional UCP ports to open up on the instance for access via the game_ip_addresses"
+  default     = []
+}
+
 ## Instance Variables
 
 variable "vm_shape" {

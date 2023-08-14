@@ -26,6 +26,9 @@ locals {
   jar_name        = basename(var.minecraft_server_jar_download_url)
   run_command     = var.is_modded == false ? "/usr/bin/java -Xms${var.min_memory} -Xmx${var.max_memory} -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -jar ${local.jar_name} nogui" : "/bin/sh run.sh"
   backup_crontime = "${var.backup_crontime} ${local.file_paths["backup_script"]}"
+
+  # Note that 25565 is the default port that MC uses
+  game_tcp_ports = concat([25565], var.additional_tcp_ports)
 }
 
 data "oci_objectstorage_namespace" "self" {

@@ -18,6 +18,8 @@ Since I created a more complex deployment over [here](https://github.com/maishir
 - Ability to sync mods from Object Storage
 - Ability to initially pass a custom server.properties and an ops.json to the instance
 - Auto Backup via CronJob (Defaults to once a week on Friday at 3PM)
+- Ability to easily add more TCP/UDP ports if needed
+    - These TCP/UDP ports are only accessible by IPS that have access to the game
 
 ## Architecture Diagram
 
@@ -87,6 +89,8 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_additional_tcp_ports"></a> [additional\_tcp\_ports](#input\_additional\_tcp\_ports) | A list of additional TCP ports to open up on the instance for access via the game\_ip\_addresses | `list(number)` | `[]` | no |
+| <a name="input_additonal_udp_ports"></a> [additonal\_udp\_ports](#input\_additonal\_udp\_ports) | A list of additional UCP ports to open up on the instance for access via the game\_ip\_addresses | `list(number)` | `[]` | no |
 | <a name="input_admin_ip_addresses"></a> [admin\_ip\_addresses](#input\_admin\_ip\_addresses) | List of IPs to allow SSH access | `list(string)` | `[]` | no |
 | <a name="input_availability_domain"></a> [availability\_domain](#input\_availability\_domain) | The az to put the instance in. Note that this default is for us-sanjose-1 | `string` | `"gEpX:US-SANJOSE-1-AD-1"` | no |
 | <a name="input_backup_crontime"></a> [backup\_crontime](#input\_backup\_crontime) | The time in crontime for auto backups to run via a cronjob. Defaults to once a week on Friday at 3PM | `string` | `"0 15 * * 5"` | no |

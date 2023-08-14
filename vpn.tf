@@ -92,9 +92,30 @@ resource "oci_core_security_list" "self" {
       protocol    = "6"
       source_type = "CIDR_BLOCK"
       source      = ingress_security_rules.value
-      tcp_options {
-        max = 25565
-        min = 25565
+
+      dynamic "tcp_options" {
+        for_each = local.game_tcp_ports
+        content {
+          max = tcp_options.value
+          min = tcp_options.value
+        }
+      }
+    }
+  }
+
+  dynamic "ingress_security_rules" {
+    for_each = length(var.additonal_udp_ports) == 0 ? [] : var.game_ip_addresses
+    content {
+      protocol    = "17"
+      source_type = "CIDR_BLOCK"
+      source      = ingress_security_rules.value
+
+      dynamic "udp_options" {
+        for_each = var.additonal_udp_ports
+        content {
+          max = udp_options.value
+          min = udp_options.value
+        }
       }
     }
   }
