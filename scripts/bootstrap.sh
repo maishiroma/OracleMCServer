@@ -46,9 +46,15 @@ if [ ! -d "${server_folder}" ]; then
     fi
 
     echo "## Configuring Firewall ##"
-    firewall-offline-cmd --zone=public --add-port=25565/tcp
-    firewall-offline-cmd --zone=public --add-port=25565/udp
-    echo "NOTE: Need to run firewall-cmd --reload manually!"
+    for curr_tcp_port in $(echo ${TCP_PORTS} | sed "s/,/ /g"); do
+        echo "Opening TCP port ${curr_tcp_port}"
+        firewall-offline-cmd --zone=public --add-port=${curr_tcp_port}/tcp
+    done
+    for curr_udp_port in $(echo ${UDP_PORTS} | sed "s/,/ /g"); do
+        echo "Opening UDP port ${curr_udp_port}"
+        firewall-offline-cmd --zone=public --add-port=${curr_udp_port}/udp
+    done
+    echo "NOTE: Need to run firewall-cmd --reload manually to finalize changes!"
 
     echo "## Configure Auto Backup CronJob ##"
     echo "${AUTO_BACKUP_CRONTIME}" | crontab -

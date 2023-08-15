@@ -27,8 +27,9 @@ locals {
   run_command     = var.is_modded == false ? "/usr/bin/java -Xms${var.min_memory} -Xmx${var.max_memory} -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled -jar ${local.jar_name} nogui" : "/bin/sh run.sh"
   backup_crontime = "${var.backup_crontime} ${local.file_paths["backup_script"]}"
 
-  # Note that 25565 is the default port that MC uses
-  game_tcp_ports = concat([25565], var.additional_tcp_ports)
+  # Note that 25565 is the default port MC uses
+  game_tcp_ports = distinct(concat([25565], var.additional_tcp_ports))
+  game_udp_ports = distinct(concat([25565], var.additonal_udp_ports))
 }
 
 data "oci_objectstorage_namespace" "self" {
@@ -52,6 +53,8 @@ data "template_file" "fact_file" {
     SERVICE_NAME            = local.service_name
     JAR_NAME                = local.jar_name
     AUTO_BACKUP_CRONTIME    = local.backup_crontime
+    TCP_PORTS               = join(",", local.game_tcp_ports)
+    UDP_PORTS               = join(",", local.game_udp_ports)
   }
 }
 
