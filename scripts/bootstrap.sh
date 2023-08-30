@@ -4,9 +4,9 @@ source /etc/oci_facts
 
 if [ ! -d "${server_folder}" ]; then
     echo "## Performing initial bootstrap ##"
-    useradd -r -m -U -d ${home_folder} -s /bin/bash minecraft
+    useradd -r -m -U -d ${home_folder} -s /bin/bash ${service_username}
     mkdir ${server_folder}
-    chown -R minecraft:minecraft ${server_folder}
+    chown -R ${service_username}:${service_username} ${server_folder}
     cd ${server_folder}
 
     yum install -y java-17-openjdk zip unzip

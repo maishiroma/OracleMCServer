@@ -21,6 +21,7 @@ locals {
   server_folder     = "${local.home_folder}/server"
   mod_folder        = "${local.server_folder}/mods"
   service_name      = "minecraft"
+  service_username  = "minecraft"
   full_service_name = var.is_modded == false ? "Minecraft Server" : "Minecraft Modded Server"
 
   jar_name        = basename(var.minecraft_server_jar_download_url)
@@ -51,6 +52,7 @@ data "template_file" "fact_file" {
     SERVER_FOLDER           = local.server_folder
     MOD_FOLDER              = local.mod_folder
     SERVICE_NAME            = local.service_name
+    SERVICE_USERNAME        = local.service_username
     JAR_NAME                = local.jar_name
     AUTO_BACKUP_CRONTIME    = local.backup_crontime
     TCP_PORTS               = join(",", local.game_tcp_ports)
@@ -104,13 +106,13 @@ data "template_cloudinit_config" "self" {
         {
           content     = file(local.server_properties_path)
           path        = local.file_paths["server_properties"]
-          owner       = "root:root"
+          owner       = "${local.service_username}:${local.service_username}"
           permissions = "0644"
         },
         {
           content     = file(local.ops_json_path)
           path        = local.file_paths["ops_json"]
-          owner       = "root:root"
+          owner       = "${local.service_username}:${local.service_username}"
           permissions = "0644"
         },
         {
@@ -122,7 +124,7 @@ data "template_cloudinit_config" "self" {
         {
           content     = data.template_file.modded_user_jvm_args.rendered
           path        = local.file_paths["user_jvm_args_txt"]
-          owner       = "root:root"
+          owner       = "${local.service_username}:${local.service_username}"
           permissions = "0644"
         },
         {
