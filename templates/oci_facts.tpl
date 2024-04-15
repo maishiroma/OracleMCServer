@@ -15,3 +15,5 @@ export server_folder="${SERVER_FOLDER}"
 export mod_folder="${MOD_FOLDER}"
 export service_name="${SERVICE_NAME}"
 export service_username="${SERVICE_USERNAME}"
+
+export OCI_CLI_AUTH=instance_principal
