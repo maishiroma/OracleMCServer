@@ -13,15 +13,10 @@ if [ ! -d "${server_folder}" ]; then
     dnf -y install oraclelinux-developer-release-el8
     dnf -y install python36-oci-cli
 
-    curl https://rclone.org/install.sh | bash
-
     echo "## Download Server Jar ##"
     curl -s -O "${minecraft_server_jar_download_url}"
     
     if [ ${is_modded} ]; then
-        mkdir -p ~/.config/rclone
-        mv -f /etc/rclone.conf ~/.config/rclone/rclone.conf
-
         echo "## Installing Modded Server ##"
         /usr/bin/java -jar ${jar_name} --installServer
     fi
@@ -42,7 +37,18 @@ if [ ! -d "${server_folder}" ]; then
         mv -f /etc/user_jvm_args.txt "${server_folder}/user_jvm_args.txt"
         
         echo "## Initial sync of mods ##"
-        rclone sync oos:${bucket_name}/mods ${mod_folder} --create-empty-src-dirs
+        mkdir ${mod_folder}
+        oci os object list --bucket-name ${bucket_name} --prefix "mods/" | jq -r '.data' > "${server_folder}/mods.json"
+        count=$(cat ${server_folder}/mods.json | jq '. | length')
+        for ((i=0; i<$count; i++)); do
+            obj_name=`jq -r '.['$i'].name' ${server_folder}/mods.json`
+            obj_size=`jq -r '.['$i'].size' ${server_folder}/mods.json`
+            if [ $obj_size -gt 0 ]; then 
+                raw_obj_name=$(basename ${obj_name})
+                oci os object get --bucket-name ${bucket_name} --name ${obj_name} --file "${mod_folder}/${raw_obj_name}"
+            fi
+        done
+        rm "${server_folder}/mods.json" -f
     fi
 
     echo "## Configuring Firewall ##"
