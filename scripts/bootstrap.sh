@@ -13,6 +13,12 @@ if [ ! -d "${server_folder}" ]; then
     dnf -y install oraclelinux-developer-release-el8
     dnf -y install python36-oci-cli
 
+    echo "## Downloading Bootstrap Config ##"
+    download_location="/etc/$(basename ${bootstrap_config_zip_prefix})"
+    oci os object get --bucket-name ${bucket_name} --name ${bootstrap_config_zip_prefix} --file ${download_location}
+    unzip ${download_location} -d /etc
+    rm -rf ${download_location}
+
     echo "## Download Server Jar ##"
     curl -s -O "${minecraft_server_jar_download_url}"
     
@@ -35,6 +41,7 @@ if [ ! -d "${server_folder}" ]; then
     if [ ${is_modded} ]; then
         echo "## Creating JVM arguments for modded server ##"
         mv -f /etc/user_jvm_args.txt "${server_folder}/user_jvm_args.txt"
+        chown ${service_username}:${service_username} "${server_folder}/user_jvm_args.txt"
         
         echo "## Initial sync of mods ##"
         mkdir ${mod_folder}
@@ -71,9 +78,11 @@ fi
 echo "## Move Server and OPs files to proper location ##"
 if [ -f /etc/server.properites ]; then
     mv -f /etc/server.properites "${server_folder}/server.properties" -f
+    chown ${service_username}:${service_username} "${server_folder}/server.properties"
 fi
 if [ -f /etc/ops.json ]; then
     mv -f /etc/ops.json "${server_folder}/ops.json" -f
+    chown ${service_username}:${service_username} "${server_folder}/ops.json"
 fi
 
 echo "## Starting up Server ##"

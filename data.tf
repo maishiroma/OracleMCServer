@@ -31,6 +31,9 @@ locals {
   # Note that 25565 is the default port MC uses
   game_tcp_ports = distinct(concat([25565], var.additional_tcp_ports))
   game_udp_ports = distinct(concat([25565], var.additonal_udp_ports))
+
+  bootstrap_config_zip_name   = "bootstrap.zip"
+  bootstrap_config_zip_prefix = "config/${local.bootstrap_config_zip_name}"
 }
 
 data "oci_objectstorage_namespace" "self" {
@@ -44,6 +47,7 @@ data "template_file" "fact_file" {
     MAX_MEMORY              = var.max_memory
     BUCKET_NAMESPACE        = data.oci_objectstorage_namespace.self.namespace
     BUCKET_NAME             = oci_objectstorage_bucket.self.name
+    BOOTSTRAP_ZIP_PREFIX    = local.bootstrap_config_zip_prefix
     SERVER_JAR_DOWNLOAD_URL = var.minecraft_server_jar_download_url
     REGION_NAME             = var.region_name
     COMPARTMENT_ID          = oci_identity_compartment.self.id
@@ -70,16 +74,6 @@ data "template_file" "minecraft_service" {
   }
 }
 
-data "template_file" "rclone_conf" {
-  template = file("${path.module}/templates/rclone.conf.tpl")
-
-  vars = {
-    bucket_namespace = data.oci_objectstorage_namespace.self.namespace
-    compartment_id   = oci_identity_compartment.self.id
-    region_name      = var.region_name
-  }
-}
-
 data "template_file" "modded_user_jvm_args" {
   template = file("${path.module}/templates/user_jvm_args.txt.tpl")
 
@@ -89,77 +83,54 @@ data "template_file" "modded_user_jvm_args" {
   }
 }
 
+data "archive_file" "bootstrap_config" {
+  type        = "zip"
+  output_path = "${path.module}/${local.bootstrap_config_zip_name}"
+
+  source {
+    content  = data.template_file.fact_file.rendered
+    filename = basename(local.file_paths["fact_file"])
+  }
+
+  source {
+    content  = file(local.server_properties_path)
+    filename = basename(local.file_paths["server_properties"])
+  }
+
+  source {
+    content  = file(local.ops_json_path)
+    filename = basename(local.file_paths["ops_json"])
+  }
+
+  source {
+    content  = data.template_file.modded_user_jvm_args.rendered
+    filename = basename(local.file_paths["user_jvm_args_txt"])
+  }
+
+  source {
+    content  = data.template_file.minecraft_service.rendered
+    filename = basename(local.file_paths["minecraft_service"])
+  }
+
+  source {
+    content  = file("${path.module}/scripts/backup.sh")
+    filename = basename(local.file_paths["backup_script"])
+  }
+
+  source {
+    content  = file("${path.module}/scripts/restore_backup.sh")
+    filename = basename(local.file_paths["restore_backup_script"])
+  }
+
+  source {
+    content  = file("${path.module}/scripts/mod_refresh.sh")
+    filename = basename(local.file_paths["mod_refresh_script"])
+  }
+}
+
 data "template_cloudinit_config" "self" {
   gzip          = true
   base64_encode = true
-
-  part {
-    content_type = "text/cloud-config"
-    content = yamlencode({
-      write_files = [
-        {
-          content     = data.template_file.fact_file.rendered
-          path        = local.file_paths["fact_file"]
-          owner       = "root:root"
-          permissions = "0644"
-        },
-        {
-          content     = file(local.server_properties_path)
-          path        = local.file_paths["server_properties"]
-          owner       = "${local.service_username}:${local.service_username}"
-          permissions = "0644"
-        },
-        {
-          content     = file(local.ops_json_path)
-          path        = local.file_paths["ops_json"]
-          owner       = "${local.service_username}:${local.service_username}"
-          permissions = "0644"
-        },
-        {
-          content     = data.template_file.rclone_conf.rendered
-          path        = local.file_paths["rclone_conf"]
-          owner       = "root:root"
-          permissions = "0644"
-        },
-        {
-          content     = data.template_file.modded_user_jvm_args.rendered
-          path        = local.file_paths["user_jvm_args_txt"]
-          owner       = "${local.service_username}:${local.service_username}"
-          permissions = "0644"
-        },
-        {
-          content     = data.template_file.minecraft_service.rendered
-          path        = local.file_paths["minecraft_service"]
-          owner       = "root:root"
-          permissions = "0644"
-        },
-        {
-          content     = file("${path.module}/scripts/backup.sh")
-          path        = local.file_paths["backup_script"]
-          owner       = "root:root"
-          permissions = "0744"
-        },
-        {
-          content     = file("${path.module}/scripts/restore_backup.sh")
-          path        = local.file_paths["restore_backup_script"]
-          owner       = "root:root"
-          permissions = "0744"
-        },
-        {
-          content     = file("${path.module}/scripts/mod_refresh.sh")
-          path        = local.file_paths["mod_refresh_script"]
-          owner       = "root:root"
-          permissions = "0744"
-        },
-        {
-          content     = file("${path.module}/scripts/bootstrap.sh")
-          path        = local.file_paths["bootstrap_script"]
-          owner       = "root:root"
-          permissions = "0744"
-        }
-      ]
-    })
-  }
 
   part {
     content_type = "text/x-shellscript"
