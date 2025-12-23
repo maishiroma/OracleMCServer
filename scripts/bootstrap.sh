@@ -9,7 +9,7 @@ if [ ! -d "${server_folder}" ]; then
     chown -R ${service_username}:${service_username} ${server_folder}
     cd ${server_folder}
 
-    yum install -y java-17-openjdk zip unzip
+    yum install -y java-${JAVA_VERSION}-openjdk zip unzip
     dnf -y install oraclelinux-developer-release-el8
     dnf -y install python36-oci-cli
 
@@ -21,7 +21,7 @@ if [ ! -d "${server_folder}" ]; then
 
     echo "## Download Server Jar ##"
     curl -s -O "${minecraft_server_jar_download_url}"
-    
+
     if [ ${is_modded} ]; then
         echo "## Installing Modded Server ##"
         /usr/bin/java -jar ${jar_name} --installServer
@@ -29,7 +29,7 @@ if [ ! -d "${server_folder}" ]; then
 
     echo "## Creating systemd service for minecraft ##"
     mv -f /etc/minecraft.service /etc/systemd/system/minecraft.service
-    
+
     systemctl daemon-reload
     systemctl start ${service_name}
     echo "## Waiting for eula to show up in server directory ##"
@@ -42,7 +42,7 @@ if [ ! -d "${server_folder}" ]; then
         echo "## Creating JVM arguments for modded server ##"
         mv -f /etc/user_jvm_args.txt "${server_folder}/user_jvm_args.txt"
         chown ${service_username}:${service_username} "${server_folder}/user_jvm_args.txt"
-        
+
         echo "## Initial sync of mods ##"
         mkdir ${mod_folder}
         oci os object list --bucket-name ${bucket_name} --prefix "mods/" | jq -r '.data' > "${server_folder}/mods.json"
@@ -50,7 +50,7 @@ if [ ! -d "${server_folder}" ]; then
         for ((i=0; i<$count; i++)); do
             obj_name=`jq -r '.['$i'].name' ${server_folder}/mods.json`
             obj_size=`jq -r '.['$i'].size' ${server_folder}/mods.json`
-            if [ $obj_size -gt 0 ]; then 
+            if [ $obj_size -gt 0 ]; then
                 raw_obj_name=$(basename ${obj_name})
                 oci os object get --bucket-name ${bucket_name} --name ${obj_name} --file "${mod_folder}/${raw_obj_name}"
             fi

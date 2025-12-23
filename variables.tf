@@ -138,3 +138,9 @@ variable "backup_crontime" {
   description = "The time in crontime for auto backups to run via a cronjob. Defaults to once a week on Friday at 3PM"
   default     = "0 15 * * 5"
 }
+
+variable "java_version" {
+  type        = string
+  description = "The name of the java version to install"
+  default     = "17"
+}
