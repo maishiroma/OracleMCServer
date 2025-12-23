@@ -111,6 +111,7 @@ No modules.
 | <a name="input_vm_shape"></a> [vm\_shape](#input\_vm\_shape) | The shape of the VM. The default is part of the Always Free Tier | `string` | `"VM.Standard.A1.Flex"` | no |
 | <a name="input_vm_specs"></a> [vm\_specs](#input\_vm\_specs) | The specs of the VM. Note that the default is part of the Always Free Tier | `map(string)` | <pre>{<br>  "cpus": "2",<br>  "memory": "6"<br>}</pre> | no |
 | <a name="input_vpc_cidr_block"></a> [vpc\_cidr\_block](#input\_vpc\_cidr\_block) | The CIDR block to use for the VPC | `string` | `"10.0.0.0/16"` | no |
+| <a name="input_java_version"></a> [java\_version](#input\_java\_version) | The name of the java version to install | `string` | `"19"` | no |
 
 ## Outputs
 

@@ -61,6 +61,7 @@ data "template_file" "fact_file" {
     AUTO_BACKUP_CRONTIME    = local.backup_crontime
     TCP_PORTS               = join(",", local.game_tcp_ports)
     UDP_PORTS               = join(",", local.game_udp_ports)
+    JAVA_VERSION            = var.java_version
   }
 }
 

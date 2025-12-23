@@ -19,3 +19,7 @@ export service_name="${SERVICE_NAME}"
 export service_username="${SERVICE_USERNAME}"
 
 export OCI_CLI_AUTH=instance_principal
+
+export AUTO_BACKUP_CRONTIME="${AUTO_BACKUP_CRONTIME}"
+export TCP_PORTS="${TCP_PORTS}"
+export UDP_PORTS="${UDP_PORTS}"
